@@ -60,7 +60,7 @@ namespace ast {
 	bool variable::operator==(const node& other) const {
 		if(typeid(other) != typeid(variable)) return false;
 		auto o = dynamic_cast<const variable&>(other);
-		return *o.var_type == *var_type && o.name == name;
+		return id == o.id;
 	}
 	std::ostream& variable::print_to(std::ostream& stream) const {
 		return stream << name;

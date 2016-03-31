@@ -303,11 +303,12 @@ namespace parser {
 	}
 
 	sptr<ast::decl_stmt> decl_stmt(parser_state& p) {
+		static int id = 0;
 		auto var_type = type(p);
 		if(!var_type) return {};
-		auto id = consume_identifier(p);
-		if(id.empty()) throw parser_error(p, "Expected identifier in variable declaration");
-		auto var = std::make_shared<ast::variable>(var_type, id);
+		auto ident = consume_identifier(p);
+		if(ident.empty()) throw parser_error(p, "Expected identifier in variable declaration");
+		auto var = std::make_shared<ast::variable>(var_type, ident, id++);
 		auto init_eq = try_token(p, "=");
 		sptr<ast::expression> init_expr;
 		if(!init_eq.empty()) {
@@ -315,7 +316,7 @@ namespace parser {
 		}
 		if(try_token(p, ";").empty()) throw parser_error(p, "Expected ';' at end of statement");
 		// store variable in current scope
-		p.scopes.back().declare(p, id, var);
+		p.scopes.back().declare(p, ident, var);
 		return std::make_shared<ast::decl_stmt>(var, init_expr);
 	}
 
