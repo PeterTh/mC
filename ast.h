@@ -67,7 +67,8 @@ namespace ast {
 	struct variable : public expression {
 		sptr<type> var_type;
 		string name;
-		variable(sptr<type> var_type, string name) : var_type(var_type), name(name) {}
+		int id;
+		variable(sptr<type> var_type, string name, int id) : var_type(var_type), name(name), id(id) {}
 		virtual bool operator==(const node& other) const;
 		virtual std::ostream& print_to(std::ostream& stream) const;
 	};

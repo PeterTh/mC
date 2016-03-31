@@ -40,7 +40,7 @@ void test_parser() {
 	EXPECT_NO_MATCH(parser::variable, str_4dot5);
 	{
 		parser::parser_state p(str_test.cbegin(), str_test.cend());
-		sptr<ast::variable> var = std::make_shared<ast::variable>(std::make_shared<ast::int_type>(), str_test);
+		sptr<ast::variable> var = std::make_shared<ast::variable>(std::make_shared<ast::int_type>(), str_test, 0);
 		p.scopes.back().declare(p, str_test, var);
 		// freestanding
 		auto match = parser::variable(p);
