@@ -1,7 +1,7 @@
-CXX=/scratch/c703/c703432/gcc-5.3.0-install/bin/g++
+CXX=g++
 RM=rm -f
-CPPFLAGS=-g -Wall --std=c++14
-LDFLAGS=-g
+CPPFLAGS=-g3 -O0 -Wall --std=c++14
+LDFLAGS=
 
 SRCS=$(shell ls *.cpp) $(shell ls tests/*.cpp)
 OBJS=$(subst .cpp,.o,$(SRCS))

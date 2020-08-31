@@ -17,7 +17,7 @@ namespace parser {
 	class scope {
 		std::map<string, sptr<ast::variable>> storage;
 	public:
-		void declare(const parser_state& p, string name, sptr<ast::variable> var);
+		void declare(parser_state& p, string name, sptr<ast::variable> var);
 		sptr<ast::variable> lookup(string name) const;
 	};
 
@@ -31,9 +31,9 @@ namespace parser {
 	};
 
 	struct parser_error {
-		const parser_state& state;
+		parser_state state;
 		string message;
-		parser_error(const parser_state& state, const string& message) : state(state), message(message) {}
+		parser_error(parser_state&& state, const string& message) : state(std::move(state)), message(message) {}
 	};
 
 	// TYPES ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

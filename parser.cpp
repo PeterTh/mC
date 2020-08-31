@@ -85,7 +85,7 @@ namespace {
 		if(!ret) {
 			std::stringstream ss;
 			ss << "Expected " << typeid(RetType).name();
-			throw parser_error(p, ss.str());
+			throw parser_error(std::move(p), ss.str());
 		}
 		return ret;
 	}
@@ -120,8 +120,8 @@ namespace parser {
 
 	// state ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void scope::declare(const parser_state& p, string name, sptr<ast::variable> var) {
-		if(storage.find(name) != storage.end()) throw parser_error(p, "Declaring variable with name which already exists in this scope");
+	void scope::declare(parser_state& p, string name, sptr<ast::variable> var) {
+		if(storage.find(name) != storage.end()) throw parser_error(std::move(p), "Declaring variable with name which already exists in this scope");
 		storage[name] = var;
 	}
 
@@ -260,7 +260,7 @@ namespace parser {
 	sptr<ast::paren_expr> paren_expr(parser_state& p) {
 		if(try_token(p, string("(")).empty()) return {};
 		auto sub = expect(expression, p);
-		if(try_token(p, string(")")).empty()) throw parser_error(p, "Expected ')' at the end of parenthesized expression");
+		if(try_token(p, string(")")).empty()) throw parser_error(std::move(p), "Expected ')' at the end of parenthesized expression");
 		return std::make_shared<ast::paren_expr>(sub);
 	}
 
@@ -275,7 +275,7 @@ namespace parser {
 	sptr<ast::expr_stmt> expr_stmt(parser_state& p) {
 		auto expr = expression(p);
 		if(expr) {
-			if(try_token(p, ";").empty()) throw parser_error(p, "Expected ';' at end of statement");
+			if(try_token(p, ";").empty()) throw parser_error(std::move(p), "Expected ';' at end of statement");
 			return std::make_shared<ast::expr_stmt>(expr);
 		}
 		return {};
@@ -287,7 +287,7 @@ namespace parser {
 		ast::stmt_list statements;
 		while(auto stmt = statement(p)) statements.push_back(stmt);
 		p.scopes.pop_back();
-		if(try_token(p, "}").empty()) throw parser_error(p, "Expected '}' at end of compound statement");
+		if(try_token(p, "}").empty()) throw parser_error(std::move(p), "Expected '}' at end of compound statement");
 		return std::make_shared<ast::compound_stmt>(statements);
 	}
 
@@ -306,14 +306,14 @@ namespace parser {
 		auto var_type = type(p);
 		if(!var_type) return {};
 		auto id = consume_identifier(p);
-		if(id.empty()) throw parser_error(p, "Expected identifier in variable declaration");
+		if(id.empty()) throw parser_error(std::move(p), "Expected identifier in variable declaration");
 		auto var = std::make_shared<ast::variable>(var_type, id);
 		auto init_eq = try_token(p, "=");
 		sptr<ast::expression> init_expr;
 		if(!init_eq.empty()) {
 			init_expr = expect(expression, p);
 		}
-		if(try_token(p, ";").empty()) throw parser_error(p, "Expected ';' at end of statement");
+		if(try_token(p, ";").empty()) throw parser_error(std::move(p), "Expected ';' at end of statement");
 		// store variable in current scope
 		p.scopes.back().declare(p, id, var);
 		return std::make_shared<ast::decl_stmt>(var, init_expr);
